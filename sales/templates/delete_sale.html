@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="alert alert-danger shadow-sm">
+    <h3>Delete Sale</h3>
+
+    <p>Are you sure you want to delete invoice <strong>INV-{{ sale.id }}</strong>?</p>
+
+    <p>
+        Customer: <strong>{{ sale.customer_name }}</strong><br>
+        Total: <strong>{{ sale.total_price|floatformat:2|intcomma }}</strong>
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'sales_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

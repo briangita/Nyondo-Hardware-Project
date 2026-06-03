@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<style>
+@media print {
+    nav, footer, .no-print {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .receipt-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        width: 100%;
+    }
+}
+</style>
+
+<div class="receipt-container card shadow-sm mx-auto p-4" style="max-width: 650px;">
+
+    <div class="text-center mb-3">
+        <h4 class="mb-0">Nyondo General Hardware</h4>
+        <small class="text-muted">Salary Scheme Payment Receipt</small>
+    </div>
+
+    <hr>
+
+  
+    <div class="mb-3">
+        <p class="mb-1">
+            <strong>Receipt:</strong> TMP-{{ payment.id|stringformat:"05d" }}
+        </p>
+        <p class="mb-1">
+            <strong>Date:</strong> {{ payment.payment_date|date:"j M Y, H:i" }}
+        </p>
+    </div>
+
+    <hr>
+
+   
+    <div class="mb-3">
+        <p class="mb-1">
+            <strong>Customer:</strong> {{ payment.customer.full_name }}
+        </p>
+        <p class="mb-1">
+            <strong>NIN:</strong> {{ payment.customer.nin_number }}
+        </p>
+        <p class="mb-1">
+            <strong>Phone:</strong> {{ payment.customer.phone_number }}
+        </p>
+    </div>
+
+    <hr>
+
+
+    <div class="text-center my-4">
+        <h2 class="text-success">
+            UGX {{ payment.amount_paid|floatformat:0|intcomma }}
+        </h2>
+        <small class="text-muted">Amount Paid</small>
+    </div>
+
+    {% if payment.notes %}
+    <div class="mb-3">
+        <p class="mb-1">
+            <strong>Notes:</strong>
+        </p>
+        <p class="text-muted">
+            {{ payment.notes }}
+        </p>
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <div class="text-center mt-3">
+        <small>Thank you for your payment.</small>
+    </div>
+
+    <!-- Actions -->
+    <div class="text-center mt-3 no-print">
+        <button onclick="window.print()" class="btn btn-primary">
+            Print Receipt
+        </button>
+
+        <a href="{% url 'scheme_customer_list' %}" class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

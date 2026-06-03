@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="mb-4">
+    <h3 class="mb-1">Manager Dashboard</h3>
+    <p class="text-muted">Business overview and risk indicators.</p>
+</div>
+
+<!-- Alerts -->
+{% if alerts %}
+<div class="mb-4">
+    {% for alert in alerts %}
+    <div class="alert alert-{{ alert.type }}">
+        ⚠ {{ alert.message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Financial Overview -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card border-start border-success border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Total Sales</h6>
+                <h4>{{ total_sales|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-start 
+            {% if profit_margin < 10 %}border-danger
+            {% elif profit_margin < 25 %}border-warning
+            {% else %}border-success{% endif %} border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Profit Margin</h6>
+                <h4>{{ profit_margin|floatformat:1 }}%</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-start 
+            {% if unpaid_sales > 0 %}border-danger{% else %}border-success{% endif %} border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Unpaid Sales</h6>
+                <h4>{{ unpaid_sales|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-start border-primary border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Output VAT</h6>
+                <h4>{{ output_vat|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Top Products -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header">Top Products</div>
+    <div class="card-body">
+
+        {% for item in top_products %}
+        <div class="mb-3">
+            <div class="d-flex justify-content-between">
+                <span>{{ item.product__product_name }}</span>
+                <span class="badge bg-dark">{{ item.quantity }}</span>
+            </div>
+            <div class="progress mt-1" style="height:6px;">
+                <div class="progress-bar bg-success"
+                     style="width: {{ item.percentage|floatformat:0 }}%;">
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- Inventory -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-start border-primary border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Stock Value</h6>
+                <h4>{{ total_stock_value|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-start 
+            {% if low_stock_count > 0 %}border-danger{% else %}border-success{% endif %}
+            border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Low Stock</h6>
+                <h4>{{ low_stock_count }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Suppliers -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning">Supplier Payables</div>
+    <div class="card-body">
+        <h4 class="{% if total_supplier_payables > 0 %}text-danger{% endif %}">
+            {{ total_supplier_payables|intcomma }}
+        </h4>
+    </div>
+</div>
+
+<!-- Scheme -->
+<div class="row g-3">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Customers</h6>
+                <h4>{{ total_scheme_customers }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Deposits</h6>
+                <h4>{{ total_deposits|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Goods Taken</h6>
+                <h4>{{ goods_value|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-start border-danger border-4 shadow-sm">
+            <div class="card-body">
+                <h6>Scheme Balance</h6>
+                <h4>{{ scheme_balance|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">Profit & Loss Report</h3>
+
+    <div>
+        <a href="{% url 'add_expense' %}" class="btn btn-primary">
+            Add Expense
+        </a>
+
+        <a href="{% url 'expense_list' %}" class="btn btn-secondary">
+            View Expenses
+        </a>
+    </div>
+</div>
+
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Filter</button>
+
+        <a href="?start_date={{ start_date }}&end_date={{ end_date }}&export=excel"
+           class="btn btn-success">
+            Export Excel
+        </a>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-success border-4">
+            <div class="card-body">
+                <h6>Total Revenue</h6>
+                <h4>{{ total_revenue|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-warning border-4">
+            <div class="card-body">
+                <h6>Cost of Goods Sold</h6>
+                <h4>{{ total_cost|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+                <h6>Gross Profit</h6>
+                <h4>{{ gross_profit|floatformat:2|intcomma }}</h4>
+                <small>{{ gross_profit_margin|floatformat:2 }}%</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-danger border-4">
+            <div class="card-body">
+                <h6>Operating Expenses</h6>
+                <h4>{{ total_operating_expenses|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card shadow-sm mb-4 border-start border-dark border-4">
+    <div class="card-body">
+        <h6>Net Profit</h6>
+
+        <h3>
+            {{ net_profit|floatformat:2|intcomma }}
+        </h3>
+
+        <p class="mb-0 text-muted">
+            Net Profit Margin: {{ net_profit_margin|floatformat:2 }}%
+        </p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        Operating Expenses Included in This Period
+    </div>
+
+    <div class="card-body table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Paid To</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.expense_date|date:"d M Y" }}</td>
+                    <td>{{ expense.get_category_display }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>{{ expense.paid_to|default:"-" }}</td>
+                    <td>{{ expense.amount|floatformat:2|intcomma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No operating expenses found for this period.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr class="table-dark">
+                    <th colspan="4">Total Operating Expenses</th>
+                    <th>{{ total_operating_expenses|floatformat:2|intcomma }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

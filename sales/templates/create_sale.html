@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load custom_filters  %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0">Register Sale</h3>
+    </div>
+
+   <div class="card-body">
+
+    {% if errors.general %}
+        <div class="alert alert-danger">{{ errors.general }}</div>
+    {% endif %}
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Customer Name</label>
+            <input type="text" name="customer_name"
+                   value="{{ data.customer_name }}"
+                   class="form-control {% if errors.customer_name %}is-invalid{% endif %}">
+            {% if errors.customer_name %}
+                <div class="invalid-feedback">{{ errors.customer_name }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label>Customer Type</label>
+            <select name="customer_type"
+                    class="form-select {% if errors.customer_type %}is-invalid{% endif %}">
+                <option value="">Select</option>
+                <option value="retail" {% if data.customer_type == "retail" %}selected{% endif %}>Retail</option>
+                <option value="wholesale" {% if data.customer_type == "wholesale" %}selected{% endif %}>Wholesale</option>
+            </select>
+            {% if errors.customer_type %}
+                <div class="invalid-feedback">{{ errors.customer_type }}</div>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <h5>Products</h5>
+
+        {% if errors.products %}
+            <div class="alert alert-danger">{{ errors.products }}</div>
+        {% endif %}
+
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>VAT</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for i in "01234" %}
+                <tr>
+
+                    <!-- PRODUCT -->
+                    <td>
+                        {% with key="product_"|add:forloop.counter0 %}
+                        <select name="product"
+                            class="form-select {% if errors|get_item:key %}is-invalid{% endif %}">
+                            <option value="">Select</option>
+
+                            {% for product in products %}
+                            <option value="{{ product.id }}"
+                                {% if data.product|get_item:forloop.counter0 == product.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}>
+                                {{ product.product_name }} |
+                                Retail: {{ product.retail_price|floatformat:2|intcomma }} |
+                                Wholesale: {{ product.wholesale_price|floatformat:2|intcomma }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        {% if errors|get_item:key %}
+                            <div class="invalid-feedback">
+                                {{ errors|get_item:key }}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+
+                    <!-- QUANTITY -->
+                    <td>
+                        {% with key="quantity_"|add:forloop.counter0 %}
+                        <input type="number" name="quantity"
+                               value="{{ data.quantity|get_item:forloop.counter0 }}"
+                               class="form-control {% if errors|get_item:key %}is-invalid{% endif %}">
+
+                        {% if errors|get_item:key %}
+                            <div class="invalid-feedback">
+                                {{ errors|get_item:key }}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+
+                    <!-- VAT -->
+                    <td class="text-center">
+                        <input type="checkbox"
+                               name="vat_applicable_{{ forloop.counter0 }}"
+                               {% if data|get_item:"vat_applicable_"|add:forloop.counter0 %}checked{% endif %}>
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" name="customer_paid"
+                   {% if data.customer_paid %}checked{% endif %}>
+            <label>Customer has paid</label>
+        </div>
+
+        <div class="mb-3">
+            <label>Payment Type</label>
+            <select name="payment_type"
+                    class="form-select {% if errors.payment_type %}is-invalid{% endif %}">
+                <option value="">Select</option>
+                <option value="cash">Cash</option>
+                <option value="mobilemoney">Mobile Money</option>
+                <option value="banktransfer">Bank Transfer</option>
+                <option value="cheque">Cheque</option>
+            </select>
+
+            {% if errors.payment_type %}
+                <div class="invalid-feedback">{{ errors.payment_type }}</div>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <h5>Transport</h5>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" name="transport_required"
+                   {% if data.transport_required %}checked{% endif %}>
+            <label>Transport required</label>
+        </div>
+
+        <div class="mb-3">
+            <label>Distance (KM)</label>
+            <input type="number" name="distance_km"
+                   value="{{ data.distance_km }}"
+                   class="form-control {% if errors.distance_km %}is-invalid{% endif %}">
+
+            {% if errors.distance_km %}
+                <div class="invalid-feedback">{{ errors.distance_km }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label>Vehicle</label>
+            <select name="assigned_vehicle"
+                    class="form-select {% if errors.assigned_vehicle %}is-invalid{% endif %}">
+                <option value="">Select</option>
+
+                {% for vehicle in vehicles %}
+                <option value="{{ vehicle.id }}">
+                    {{ vehicle.vehicle_name }} - {{ vehicle.registration_number }}
+                </option>
+                {% endfor %}
+            </select>
+
+            {% if errors.assigned_vehicle %}
+                <div class="invalid-feedback">{{ errors.assigned_vehicle }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Sale</button>
+        <a href="{% url 'sales_list' %}" class="btn btn-secondary">Cancel</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">Reports Center</h3>
+        <p class="text-muted mb-0">
+            Access financial, sales, inventory, and customer reports.
+        </p>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <a href="{% url 'vat_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-primary-subtle text-primary">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <h5>VAT Report</h5>
+            <p>Review input VAT, output VAT, and VAT payable.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'profit_loss_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-success-subtle text-success">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <h5>Profit & Loss</h5>
+            <p>Track revenue, costs, gross profit, and net profit.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'sales_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-dark-subtle text-dark">
+                <i class="bi bi-cart-check"></i>
+            </div>
+            <h5>Sales Report</h5>
+            <p>View invoices, sold items, totals, VAT, and payment status.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'stock_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-warning-subtle text-warning">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <h5>Stock Report</h5>
+            <p>Check stock balances, stock value, and low-stock items.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'scheme_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-info-subtle text-info">
+                <i class="bi bi-people"></i>
+            </div>
+            <h5>Scheme Report</h5>
+            <p>Monitor deposits, goods collected, and customer balances.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'payables_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-danger-subtle text-danger">
+                <i class="bi bi-credit-card"></i>
+            </div>
+            <h5>Payables Report</h5>
+            <p>Review unpaid supplier invoices and outstanding payables.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'receivables_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-secondary-subtle text-secondary">
+                <i class="bi bi-cash-coin"></i>
+            </div>
+            <h5>Receivables Report</h5>
+            <p>Track unpaid customer invoices and outstanding receivables.</p>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="{% url 'expense_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-danger-subtle text-danger">
+                <i class="bi bi-wallet2"></i>
+            </div>
+            <h5>Expenses Report</h5>
+            <p>Track operating expenses like rent, fuel, salaries, and utilities.</p>
+        </a>
+    </div>
+
+        <div class="col-md-4">
+        <a href="{% url 'product_profitability_report' %}" class="report-card text-decoration-none">
+            <div class="report-icon bg-danger-subtle text-danger">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <h5>Product Profitability Report</h5>
+            <p>Analyze the profitability of each product.</p>
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

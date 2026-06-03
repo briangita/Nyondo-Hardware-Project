@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 class="mb-4">Edit Operating Expense</h3>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select" required>
+            {% for value, label in categories %}
+                <option value="{{ value }}" {% if expense.category == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Invoice Number</label>
+        <input type="text" name="invoice_number" class="form-control" value="{{ expense.invoice_number }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <input type="text" name="description" class="form-control" value="{{ expense.description }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <input type="number" name="amount" step="0.01" class="form-control" value="{{ expense.amount }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Expense Date</label>
+        <input type="date" name="expense_date" class="form-control" value="{{ expense.expense_date|date:'Y-m-d' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Paid To</label>
+        <input type="text" name="paid_to" class="form-control" value="{{ expense.paid_to }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Reference Number</label>
+        <input type="text" name="reference_number" class="form-control" value="{{ expense.reference_number }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Notes</label>
+        <textarea name="notes" class="form-control" rows="3">{{ expense.notes }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Expense</button>
+    <a href="{% url 'expense_list' %}" class="btn btn-secondary">Cancel</a>
+
+</form>
+
+{% endblock %}

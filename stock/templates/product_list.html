@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Products</h2>
+    <a href="{% url 'create_product' %}" class="btn btn-success">Add Product</a>
+</div>
+
+<table class="table table-bordered table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Cost Price</th>
+            <th>Retail Price</th>
+            <th>Wholesale Price</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.category_name.category_name }}</td>
+            <td>{{ product.cost_price|floatformat:2|intcomma }}</td>
+            <td>{{ product.retail_price|floatformat:2|intcomma }}</td>
+            <td>{{ product.wholesale_price|floatformat:2|intcomma }}</td>
+            <td>{{ product.description }}</td>
+            <td>
+                <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">No products found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

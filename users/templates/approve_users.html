@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">User Approvals</h3>
+        <p class="text-muted mb-0">
+            Review and approve new user registrations.
+        </p>
+    </div>
+</div>
+
+<!-- Card -->
+<div class="card shadow-sm">
+
+    <div class="card-body table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Requested By</th>
+                    <th>Date Joined</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for user in pending_users %}
+                <tr>
+
+                    <!-- Username -->
+                    <td>
+                        <strong>{{ user.username }}</strong>
+                    </td>
+
+                    <!-- Role (from Groups) -->
+                    <td>
+                        {% if user.groups.all %}
+                            {% for group in user.groups.all %}
+                                <span class="badge bg-secondary">
+                                    {{ group.name|title }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">No role</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Requested By -->
+                    <td>
+                        {{ user.requested_by|default:"-" }}
+                    </td>
+
+                    <!-- Date -->
+                    <td>
+                        {{ user.date_joined|date:"d M Y, H:i" }}
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="text-end">
+
+                        <!-- Approve -->
+                        <form method="post"
+                              action="{% url 'approve_user' user.id %}"
+                              style="display:inline;">
+                            {% csrf_token %}
+                            <button class="btn btn-success btn-sm">
+                                Approve
+                            </button>
+                        </form>
+
+                        <!-- Reject -->
+                        <form method="post"
+                              action="{% url 'reject_user' user.id %}"
+                              style="display:inline;">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to reject this user?')">
+                                Reject
+                            </button>
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        No pending users for approval.
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

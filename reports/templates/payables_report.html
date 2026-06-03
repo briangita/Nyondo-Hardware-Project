@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<h3 class="mb-4">Payables Report</h3>
+
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Filter</button>
+
+        <a href="?start_date={{ start_date }}&end_date={{ end_date }}&export=excel" class="btn btn-success">
+            Export Excel
+        </a>
+    </div>
+</form>
+
+<div class="card shadow-sm mb-4 border-start border-danger border-4">
+    <div class="card-body">
+        <h6>Total Payables</h6>
+        <h3>{{ total_payables|floatformat:2|intcomma }}</h3>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-danger text-white">
+        Unpaid Supplier Invoices
+    </div>
+
+    <div class="card-body table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Supplier</th>
+                    <th>Invoice No.</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Amount Due</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for receipt in unpaid_receipts %}
+                <tr>
+                    <td>{{ receipt.supplier_name }}</td>
+                    <td>{{ receipt.supplier_invoice_number }}</td>
+                    <td>{{ receipt.product.product_name }}</td>
+                    <td>{{ receipt.quantity_received }}</td>
+                    <td>{{ receipt.total_amount_due|floatformat:2|intcomma }}</td>
+                    <td>{{ receipt.date_received|date:"d M Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No unpaid supplier invoices.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

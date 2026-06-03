@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<style>
+/* Print Optimization */
+@media print {
+    nav, footer, .no-print {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .invoice-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        width: 100%;
+    }
+}
+</style>
+
+
+<div class="invoice-container card shadow-sm mx-auto p-4" style="max-width: 750px;">
+
+  
+    <div class="text-center mb-3">
+        <h4 class="mb-0">Nyondo Hardware Store</h4>
+        <small class="text-muted">Official sales Receipt</small>
+    </div>
+
+    <hr>
+
+   
+    <div class="mb-3">
+        <p class="mb-1"><strong>Invoice:</strong> INV-{{ sale.id }}</p>
+        <p class="mb-1"><strong>Date:</strong> {{ sale.sale_date|date:"j M Y, H:i" }}</p>
+        <p class="mb-1"><strong>Customer:</strong> {{ sale.customer_name }}</p>
+        <p class="mb-1"><strong>Type:</strong> {{ sale.get_customer_type_display }}</p>
+    </div>
+
+    <hr>
+
+
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>Product</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-end">Qty</th>
+                    <th class="text-end">VAT </th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in sale.items.all %}
+                <tr>
+                    <td>
+                        {{ item.product.product_name }}<br>
+                        <small class="text-muted">
+                            {{ item.product.category_name.category_name }}
+                        </small>
+                    </td>
+                    <td class="text-end">{{ item.selling_price|floatformat:0|intcomma }}</td>
+                    <td class="text-end">{{ item.quantity|intcomma }}</td>
+                    <td class="text-end">{{ item.output_vat|floatformat:0|intcomma }}</td>
+                    <td class="text-end">{{ item.total_price|floatformat:0|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="text-end mt-3">
+
+        <p class="mb-1">
+            <strong>Goods Total:</strong>
+            {{ sale.subtotal|floatformat:0|intcomma }}
+        </p>
+
+        <p class="mb-1">
+            <strong>VAT 18%:</strong>
+            {{ sale.output_vat|floatformat:0|intcomma }}
+        </p>
+
+        {% if sale.transport_required %}
+        <p class="mb-1">
+            <strong>Transport ({{ sale.distance_km }} KM):</strong>
+            {{ sale.transport_fee|floatformat:0|intcomma }}
+        </p>
+        {% endif %}
+
+        <h5 class="mt-2">
+            Total: {{ sale.total_price|floatformat:0|intcomma }}
+        </h5>
+
+    </div>
+
+    <hr>
+
+    <div class="mt-2">
+        <p class="mb-1">
+            <strong>Status:</strong>
+            {% if sale.customer_paid %}
+                <span class="text-success">Paid</span>
+            {% else %}
+                <span class="text-danger">Not Paid</span>
+            {% endif %}
+        </p>
+
+        {% if sale.customer_paid %}
+        <p class="mb-1">
+            <strong>Payment Type:</strong>
+            {{ sale.get_payment_type_display }}
+        </p>
+        {% endif %}
+    </div>
+
+
+    <div class="text-center mt-4">
+        <small>Thank you for your business.</small>
+    </div>
+
+  
+    <div class="text-center mt-3 no-print">
+        <button onclick="window.print()" class="btn btn-primary">
+            Print Receipt
+        </button>
+        <a href="{% url 'sales_list' %}" class="btn btn-secondary">
+            Back to Sales
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

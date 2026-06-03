@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<h3 class="mb-4">VAT Report</h3>
+
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Filter</button>
+
+        <a href="?start_date={{ start_date }}&end_date={{ end_date }}&export=excel" class="btn btn-success">
+            Export Excel
+        </a>
+    </div>
+</form>
+
+<div class="row g-3">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-success border-4">
+            <div class="card-body">
+                <h6>Output VAT</h6>
+                <h4>{{ output_vat|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+                <h6>Input VAT</h6>
+                <h4>{{ input_vat|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-danger border-4">
+            <div class="card-body">
+                <h6>VAT Payable</h6>
+                <h4>{{ vat_payable|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

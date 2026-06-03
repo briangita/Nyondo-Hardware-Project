@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<h3 class="mb-4">Salary Scheme Dashboard</h3>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+                <h6>Scheme Customers</h6>
+                <h4>{{ total_customers }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-success border-4">
+            <div class="card-body">
+                <h6>Total Deposits</h6>
+                <h4>{{ total_deposits|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-warning border-4">
+            <div class="card-body">
+                <h6>Goods Picked</h6>
+                <h4>{{ goods_value|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-danger border-4">
+            <div class="card-body">
+                <h6>Scheme Balance</h6>
+                <h4>{{ scheme_balance|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">Scheme Financial Summary</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Total Deposits</span>
+                        <strong>{{ total_deposits|floatformat:2|intcomma }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Goods Picked</span>
+                        <strong>{{ goods_value|floatformat:2|intcomma }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Current Balance</span>
+                        <strong>{{ scheme_balance|floatformat:2|intcomma }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">Scheme Status</div>
+            <div class="card-body">
+                <p>Total scheme customers: <strong>{{ total_customers }}</strong></p>
+                <p>Total deposits received: <strong>{{ total_deposits|floatformat:2|intcomma }}</strong></p>
+                <p>Total goods picked: <strong>{{ goods_value|floatformat:2|intcomma }}</strong></p>
+                <p>Current scheme balance: <strong>{{ scheme_balance|floatformat:2|intcomma }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

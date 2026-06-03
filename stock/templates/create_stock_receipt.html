@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0">Add Stock Receipt</h3>
+    </div>
+
+    <div class="card-body">
+
+    {% if errors.general %}
+        <div class="alert alert-danger">
+            {{ errors.general }}
+        </div>
+    {% endif %}
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Supplier Invoice Number</label>
+            <input type="text" name="supplier_invoice_number"
+                   value="{{ data.supplier_invoice_number }}"
+                   class="form-control {% if errors.supplier_invoice_number %}is-invalid{% endif %}">
+            {% if errors.supplier_invoice_number %}
+                <div class="invalid-feedback">{{ errors.supplier_invoice_number }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Product</label>
+            <select name="product"
+                    class="form-select {% if errors.product %}is-invalid{% endif %}">
+                <option value="">Select product</option>
+                {% for product in products %}
+                    <option value="{{ product.id }}"
+                        {% if data.product == product.id|stringformat:"s" %}selected{% endif %}>
+                        {{ product.product_name }} | Current Price: {{ product.unit_price }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if errors.product %}
+                <div class="invalid-feedback">{{ errors.product }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Supplier Name</label>
+            <input type="text" name="supplier_name"
+                   value="{{ data.supplier_name }}"
+                   class="form-control {% if errors.supplier_name %}is-invalid{% endif %}">
+            {% if errors.supplier_name %}
+                <div class="invalid-feedback">{{ errors.supplier_name }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Quantity Received</label>
+            <input type="number" name="quantity_received"
+                   value="{{ data.quantity_received }}"
+                   class="form-control {% if errors.quantity_received %}is-invalid{% endif %}">
+            {% if errors.quantity_received %}
+                <div class="invalid-feedback">{{ errors.quantity_received }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Unit Cost</label>
+            <input type="number" name="unit_cost" step="0.01"
+                   value="{{ data.unit_cost }}"
+                   class="form-control {% if errors.unit_cost %}is-invalid{% endif %}">
+            {% if errors.unit_cost %}
+                <div class="invalid-feedback">{{ errors.unit_cost }}</div>
+            {% endif %}
+            <small class="text-muted">
+                This will update the product's current unit price.
+            </small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">VAT</label>
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="vat_applicable"
+                       id="vat_applicable"
+                       {% if data.vat_applicable %}checked{% endif %}>
+                <label class="form-check-label" for="vat_applicable">
+                    VAT applicable at 18%
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Retail Selling Price</label>
+            <input type="number" name="retail_price" step="0.01"
+                   value="{{ data.retail_price }}"
+                   class="form-control {% if errors.retail_price %}is-invalid{% endif %}">
+            {% if errors.retail_price %}
+                <div class="invalid-feedback">{{ errors.retail_price }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Wholesale Selling Price</label>
+            <input type="number" name="wholesale_price" step="0.01"
+                   value="{{ data.wholesale_price }}"
+                   class="form-control {% if errors.wholesale_price %}is-invalid{% endif %}">
+            {% if errors.wholesale_price %}
+                <div class="invalid-feedback">{{ errors.wholesale_price }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox"
+                   name="supplier_paid"
+                   class="form-check-input"
+                   id="supplier_paid"
+                   {% if data.supplier_paid %}checked{% endif %}>
+            <label class="form-check-label" for="supplier_paid">
+                Supplier has been paid
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Receipt</button>
+        <a href="{% url 'stock_receipt_list' %}" class="btn btn-secondary">Cancel</a>
+
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">Scheme Report</h3>
+        <p class="text-muted mb-0">
+            Overview of customer deposits, goods collected, and balances.
+        </p>
+    </div>
+
+    <a href="?export=excel" class="btn btn-success">
+        Export to Excel
+    </a>
+</div>
+
+<div class="card p-3">
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>Customer</th>
+                    <th class="text-end">Total Deposits (UGX)</th>
+                    <th class="text-end">Goods Picked (UGX)</th>
+                    <th class="text-end">Balance (UGX)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in report_data %}
+                <tr>
+                    <td>
+                        <strong>{{ item.customer.full_name }}</strong><br>
+                        <small class="text-muted">
+                            {{ item.customer.phone_number }}
+                        </small>
+                    </td>
+
+                    <td class="text-end">
+                        {{ item.total_deposits|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ item.goods_value|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        <strong>
+                            {{ item.balance|floatformat:2 }}
+                        </strong>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No scheme data available.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot class="table-light">
+                <tr>
+                    <th>Total</th>
+
+                    <th class="text-end">
+                        {{ total_deposits_all|floatformat:2 }}
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_goods_all|floatformat:2 }}
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_balance_all|floatformat:2 }}
+                    </th>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

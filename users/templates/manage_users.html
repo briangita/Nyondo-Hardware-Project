@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">User Management</h3>
+        <p class="text-muted">Manage system users and access.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Date Joined</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user in users %}
+                <tr>
+
+                    <td><strong>{{ user.username }}</strong></td>
+
+                    <td>
+                        {% for group in user.groups.all %}
+                            <span class="badge bg-secondary">
+                                {{ group.name|title }}
+                            </span>
+                        {% empty %}
+                            <span class="text-muted">No role</span>
+                        {% endfor %}
+                    </td>
+
+                    <td>
+                        {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ user.date_joined|date:"d M Y" }}</td>
+
+                    <td class="text-end">
+
+                        <form method="post" action="{% url 'toggle_user' user.id %}">
+                            {% csrf_token %}
+
+                            {% if user.is_active %}
+                                <button class="btn btn-warning btn-sm">
+                                    Deactivate
+                                </button>
+                            {% else %}
+                                <button class="btn btn-success btn-sm">
+                                    Activate
+                                </button>
+                            {% endif %}
+                        </form>
+
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

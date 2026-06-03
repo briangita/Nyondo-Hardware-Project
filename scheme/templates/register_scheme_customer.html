@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0">Register Scheme Customer</h3>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" novalidate>
+
+            {% csrf_token %}
+
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+
+                <input type="text"
+                       name="full_name"
+                       value="{{ form_data.full_name }}"
+                       class="form-control {% if errors.full_name %}is-invalid{% endif %}">
+
+                {% if errors.full_name %}
+                    <div class="invalid-feedback">
+                        {{ errors.full_name }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- NIN -->
+            <div class="mb-3">
+                <label class="form-label">NIN Number</label>
+
+                <input type="text"
+                       name="nin_number"
+                       value="{{ form_data.nin_number }}"
+                       class="form-control {% if errors.nin %}is-invalid{% endif %}">
+
+                {% if errors.nin %}
+                    <div class="invalid-feedback">
+                        {{ errors.nin }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+                <label class="form-label">Phone Number</label>
+
+                <input type="text"
+                       name="phone_number"
+                       value="{{ form_data.phone_number }}"
+                       class="form-control {% if errors.phone %}is-invalid{% endif %}">
+
+                {% if errors.phone %}
+                    <div class="invalid-feedback">
+                        {{ errors.phone }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+
+                <textarea name="address"
+                          rows="3"
+                          class="form-control {% if errors.address %}is-invalid{% endif %}">{{ form_data.address }}</textarea>
+
+                {% if errors.address %}
+                    <div class="invalid-feedback">
+                        {{ errors.address }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Occupation -->
+            <div class="mb-3">
+                <label class="form-label">Occupation</label>
+
+                <input type="text"
+                       name="occupation"
+                       value="{{ form_data.occupation }}"
+                       class="form-control {% if errors.occupation %}is-invalid{% endif %}">
+
+                {% if errors.occupation %}
+                    <div class="invalid-feedback">
+                        {{ errors.occupation }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Employer -->
+            <div class="mb-3">
+                <label class="form-label">Employer Name</label>
+
+                <input type="text"
+                       name="employer_name"
+                       value="{{ form_data.employer_name }}"
+                       class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                Register Customer
+            </button>
+
+            <a href="{% url 'scheme_customer_list' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

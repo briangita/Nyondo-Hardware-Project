@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Pickup Goods</h3>
+    </div>
+
+    <div class="card-body">
+
+        <h5 class="mb-3">
+            Customer: <strong>{{ customer.full_name }}</strong>
+        </h5>
+
+        <div class="alert alert-info">
+            Available Scheme Balance:
+            <strong>{{ balance|floatformat:2|intcomma }}</strong>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Product</label>
+
+                <select name="product" class="form-select" required>
+                    <option value="">Select Product</option>
+
+                    {% for product in products %}
+                    <option value="{{ product.id }}">
+                        {{ product.product_name }} |
+                        Retail: {{ product.retail_price|floatformat:2|intcomma }} |
+                        Wholesale: {{ product.wholesale_price|floatformat:2|intcomma }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <input type="number" name="quantity" class="form-control" min="1" required>
+            </div>
+
+            <hr>
+
+            <h5>Transport</h5>
+
+            <div class="form-check mb-3">
+                <input type="checkbox" name="transport_required" class="form-check-input" id="transport_required">
+                <label class="form-check-label" for="transport_required">
+                    Transport required
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Distance from shop in KM</label>
+                <input type="number" name="distance_km" step="0.01" class="form-control">
+            </div>
+
+            <hr>
+
+            <div class="form-check mb-3">
+                <input type="checkbox" name="vat_applicable" class="form-check-input" id="vat_applicable">
+                <label class="form-check-label" for="vat_applicable">
+                    VAT applicable at 18%
+                </label>
+            </div>
+
+            <div class="alert alert-warning">
+                The system will reject this pickup if the total cost is greater than the available scheme balance.
+            </div>
+
+            <div class="alert alert-info">
+                Goods picked under the salary scheme are automatically recorded as paid using Salary Scheme payment type.
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Confirm Pickup
+            </button>
+
+            <a href="{% url 'customer_scheme_detail' customer.id %}" class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

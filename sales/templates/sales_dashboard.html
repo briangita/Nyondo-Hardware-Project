@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="mb-4">
+    <h3 class="mb-1">Sales Dashboard</h3>
+    <p class="text-muted">Overview of sales performance and trends.</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-success border-4 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Sales</h6>
+                <h4>{{ total_sales|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-danger border-4 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Unpaid Sales</h6>
+                <h4>{{ unpaid_sales|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-primary border-4 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Output VAT</h6>
+                <h4>{{ output_vat|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-warning border-4 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Invoices</h6>
+                <h4>{{ total_invoices }}</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Top Products + Daily Sales -->
+<div class="row g-4">
+
+    <!-- Top Products -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-semibold">Top Selling Products</div>
+            <div class="card-body">
+
+                {% for item in top_products %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ item.product__product_name }}</span>
+                        <span class="badge bg-dark">{{ item.quantity|intcomma }}</span>
+                    </div>
+
+                    <div class="progress mt-1" style="height: 6px;">
+                        <div class="progress-bar bg-success"
+                             style="width: {{ item.percentage|floatformat:0 }}%;">
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No sales data available.</p>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Sales -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-semibold">Daily Sales</div>
+            <div class="card-body table-responsive">
+
+                <table class="table table-sm table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th class="text-end">Sales</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in daily_sales %}
+                        <tr>
+                            <td>{{ item.day|date:"d M Y" }}</td>
+                            <td class="text-end">
+                                {{ item.total|floatformat:2|intcomma }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">
+                                No sales yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Monthly Trend (NO JS) -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header fw-semibold">
+        Monthly Sales Trend
+    </div>
+
+    <div class="card-body">
+
+        {% for item in monthly_data %}
+        <div class="mb-3">
+
+            <div class="d-flex justify-content-between">
+                <span>{{ item.month }}</span>
+                <strong>{{ item.total|floatformat:2|intcomma }}</strong>
+            </div>
+
+            <div class="progress mt-1" style="height: 8px;">
+                <div class="progress-bar bg-primary"
+                     style="width: {{ item.percentage|floatformat:0 }}%;">
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+        <p class="text-muted">No monthly data available.</p>
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- Unpaid Customers -->
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header bg-danger text-white fw-semibold">
+        Unpaid Invoices
+    </div>
+
+    <div class="card-body table-responsive">
+
+        <table class="table table-hover">
+
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Invoice</th>
+                    <th class="text-end">Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for sale in unpaid_customers %}
+                <tr>
+                    <td>{{ sale.customer_name }}</td>
+                    <td><span class="badge bg-secondary">{{ sale.customer_type }}</span></td>
+                    <td>INV-{{ sale.id }}</td>
+                    <td class="text-end">
+                        <strong>{{ sale.total_price|floatformat:2|intcomma }}</strong>
+                    </td>
+                    <td>{{ sale.sale_date|date:"d M Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        No unpaid customers.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,184 @@
+{% load static %}
+{% load roles %}
+
+<!-- TOP NAVBAR -->
+<nav class="navbar top-navbar">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+
+        <!-- LEFT -->
+        <div class="d-flex align-items-center gap-3">
+
+            <button class="btn mobile-menu-btn d-md-none"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileSidebar">
+                <i class="bi bi-list fs-3"></i>
+            </button>
+
+            <a href="{% url 'sales_list' %}" class="brand-link text-decoration-none">
+                <div class="logo-box">
+                    <img src="{% static 'images/logo.png' %}" class="logo-img">
+                </div>
+
+                <div>
+                    <div class="brand-title">NYONDO GENERAL HARDWARE</div>
+                    <div class="brand-subtitle">Management System</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="d-flex align-items-center gap-3">
+
+            {% if user.is_authenticated %}
+                <div class="user-badge">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    <span>{{ user.username }}</span>
+                </div>
+
+                <a href="{% url 'logout' %}" class="btn btn-danger btn-sm px-3 rounded-pill">
+                    <i class="bi bi-box-arrow-right me-1"></i>
+                    Logout
+                </a>
+            {% else %}
+                <div class="user-badge">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    <span>Guest</span>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</nav>
+
+
+<!-- SIDEBAR -->
+<aside class="sidebar d-none d-md-block">
+    <nav class="nav flex-column">
+
+        <!-- MAIN -->
+        {% if user|has_role:"admin" or user|has_role:"accounts" %}
+        <div class="sidebar-section-title">MAIN</div>
+
+        <a href="{% url 'reports_home' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'reports_home' %}active{% endif %}">
+            <i class="bi bi-file-earmark-bar-graph"></i>
+            <span>Reports</span>
+        </a>
+
+        <a href="{% url 'manager_dashboard' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}">
+            <i class="bi bi-grid-1x2-fill nav-icon"></i>
+            <span>Dashboard</span>
+        </a>
+        {% endif %}
+
+        <!-- MANAGE USERS -->
+        {% if user|has_role:"admin" %}
+        <a href="{% url 'manage_users' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">
+            <i class="bi bi-people"></i>
+            <span>Manage Users</span>
+        </a>
+        {% endif %}
+
+        <!-- SALES -->
+        {% if user|has_role:"sales_attendant" or user|has_role:"admin" %}
+        <div class="sidebar-section-title">SALES</div>
+
+        <a href="{% url 'sales_dashboard' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'sales_dashboard' %}active{% endif %}">
+            <i class="bi bi-grid-1x2-fill nav-icon"></i>
+            <span>Sales Dashboard</span>
+        </a>
+
+        <a href="{% url 'create_sale' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'create_sale' %}active{% endif %}">
+            <i class="bi bi-cart-check-fill nav-icon"></i>
+            <span>Add Sale</span>
+        </a>
+
+        <a href="{% url 'sales_list' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'sales_list' %}active{% endif %}">
+            <i class="bi bi-receipt-cutoff nav-icon"></i>
+            <span>Sales Details</span>
+        </a>
+
+        <a href="{% url 'sales_report' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'sales_report' %}active{% endif %}">
+            <i class="bi bi-clipboard-data-fill nav-icon"></i>
+            <span>Sales Report</span>
+        </a>
+        {% endif %}
+
+        <!-- STOCK -->
+        {% if user|has_role:"store_manager" or user|has_role:"admin" %}
+        <div class="sidebar-section-title">STOCK</div>
+
+        <a href="{% url 'stock_dashboard' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'stock_dashboard' %}active{% endif %}">
+            <i class="bi bi-grid-1x2-fill nav-icon"></i>
+            <span>Stock Dashboard</span>
+        </a>
+
+        <a href="{% url 'create_stock_receipt' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'create_stock_receipt' %}active{% endif %}">
+            <i class="bi bi-box-seam-fill nav-icon"></i>
+            <span>Add Stock</span>
+        </a>
+
+        <a href="{% url 'stock_receipt_list' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'stock_receipt_list' %}active{% endif %}">
+            <i class="bi bi-boxes nav-icon"></i>
+            <span>Stock Received</span>
+        </a>
+
+        <a href="{% url 'stock_report' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'stock_report' %}active{% endif %}">
+            <i class="bi bi-clipboard-data-fill nav-icon"></i>
+            <span>Stock Report</span>
+        </a>
+        {% endif %}
+
+        <!-- CUSTOMER SCHEME -->
+        {% if user|has_role:"sales_attendant" or user|has_role:"admin" %}
+        <div class="sidebar-section-title">CUSTOMER SCHEME</div>
+
+        <a href="{% url 'scheme_dashboard' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'scheme_dashboard' %}active{% endif %}">
+            <i class="bi bi-grid-1x2-fill nav-icon"></i>
+            <span>Scheme Dashboard</span>
+        </a>
+
+        <a href="{% url 'register_scheme_customer' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'register_scheme_customer' %}active{% endif %}">
+            <i class="bi bi-people-fill nav-icon"></i>
+            <span>Add Customer</span>
+        </a>
+
+        <a href="{% url 'scheme_customer_list' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'scheme_customer_list' %}active{% endif %}">
+            <i class="bi bi-person-lines-fill nav-icon"></i>
+            <span>Scheme Customers</span>
+        </a>
+
+        <a href="{% url 'scheme_report' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'scheme_report' %}active{% endif %}">
+            <i class="bi bi-clipboard-data-fill nav-icon"></i>
+            <span>Scheme Report</span>
+        </a>
+        {% endif %}
+
+        <!-- TRANSPORT -->
+        {% if user|has_role:"admin" %}
+        <div class="sidebar-section-title">TRANSPORT</div>
+
+        <a href="{% url 'vehicle_list' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'vehicle_list' %}active{% endif %}">
+            <i class="bi bi-truck-front-fill nav-icon"></i>
+            <span>Transport</span>
+        </a>
+        {% endif %}
+
+    </nav>
+</aside>

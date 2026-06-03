@@ -1,0 +1,145 @@
+{% extends "authbase.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class="container-fluid px-0">
+    <div class="row g-0 min-vh-100">
+
+        <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center text-white"
+             style="background: linear-gradient(135deg, #111827, #1f2937);">
+
+            <div class="text-center px-4" style="max-width: 400px;">
+
+                <img src="{% static 'images/logo.png' %}" 
+                     style="height: 250px;" class="mb-4">
+
+                <h2 class="fw-bold mb-3">
+                    Create Nyondo Hardware System Account
+                </h2>
+
+                <p class="text-light">
+                    Your account is not active until approved. Please wait for an administrator to activate your account after registration.
+                </p>
+
+            </div>
+        </div>
+
+        <div class="col-lg-6 d-flex align-items-center justify-content-center bg-light">
+
+            <div class="card shadow-lg border-0 p-4" style="width: 100%; max-width: 420px; border-radius: 12px;">
+
+                <h3 class="fw-semibold mb-2">Create Account</h3>
+                <p class="text-muted mb-4">Fill in the details below</p>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+
+                        {% if form.username.errors %}
+                            {{ form.username|add_class:"form-control form-control-lg is-invalid" }}
+                        {% else %}
+                            {{ form.username|add_class:"form-control form-control-lg" }}
+                        {% endif %}
+
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+
+                        {% if form.role.errors %}
+                            {{ form.role|add_class:"form-select form-select-lg is-invalid" }}
+                        {% else %}
+                            {{ form.role|add_class:"form-select form-select-lg" }}
+                        {% endif %}
+
+                        {% if form.role.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.role.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Requested By</label>
+
+                        {% if form.requested_by.errors %}
+                            {{ form.requested_by|add_class:"form-control form-control-lg is-invalid" }}
+                        {% else %}
+                            {{ form.requested_by|add_class:"form-control form-control-lg" }}
+                        {% endif %}
+
+                        {% if form.requested_by.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.requested_by.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+
+                        {% if form.password1.errors %}
+                            {{ form.password1|add_class:"form-control form-control-lg is-invalid" }}
+                        {% else %}
+                            {{ form.password1|add_class:"form-control form-control-lg" }}
+                        {% endif %}
+
+                        {% if form.password1.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password1.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+
+                        {% if form.password2.errors %}
+                            {{ form.password2|add_class:"form-control form-control-lg is-invalid" }}
+                        {% else %}
+                            {{ form.password2|add_class:"form-control form-control-lg" }}
+                        {% endif %}
+
+                        {% if form.password2.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password2.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 py-2 fw-semibold">
+                        Register
+                    </button>
+
+                </form>
+
+                <p class="text-center mt-4 text-muted">
+                    Already have an account?
+                    <a href="{% url 'login' %}" class="fw-semibold">
+                        Login
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
