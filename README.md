@@ -1,7 +1,7 @@
 #  Nyondo General Hardware Management System
 ## Introduction
 
-The **Nyondo General Hardware Management System is a comprehensive, role-based web application built with Django to digitize and streamline the day-to-day operations of a hardware business.
+The Nyondo General Hardware Management System is a comprehensive, role-based web application built with Django to digitize and streamline the day-to-day operations of a hardware business.
 
 The system replaces manual processes and scattered record-keeping with a **centralized platform** that provides visibility into:
 
