@@ -7,6 +7,7 @@
     --hw-card: #ffffff;
     --hw-border: #e5e7eb;
     --hw-muted: #6b7280;
+    --footer-height: 60px;
 }
 
 html,
@@ -22,6 +23,8 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: var(--footer-height);
 }
 
 .top-navbar {
@@ -118,14 +121,34 @@ body {
 
 .sidebar {
     width: 270px;
-    min-height: calc(100vh - 100px);
     background: #ffffff;
     border-right: 1px solid var(--hw-border);
     padding: 24px 16px;
     position: fixed;
     top: 100px;
     left: 0;
+    bottom: var(--footer-height);
     overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .sidebar-section-title {
@@ -196,7 +219,7 @@ body {
 .main-content {
     margin-left: 270px;
     width: calc(100% - 270px);
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 100px - var(--footer-height));
     padding: 32px;
 }
 
@@ -297,6 +320,11 @@ label {
     border-top: 2px solid #ff7a00;
     font-size: 14px;
     width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1040;
 }
 
 .bottom-navbar i {
@@ -324,17 +352,17 @@ label {
     display: block;
     background: #ffffff;
     border-radius: 20px;
-    padding: 24px;
+    padding: 20px;
     height: 100%;
     border: 1px solid #e5e7eb;
     transition: all 0.25s ease;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     color: #111827;
 }
 
 .report-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
     border-color: #cbd5e1;
 }
 
@@ -346,14 +374,15 @@ label {
 }
 
 .report-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 16px;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 20px;
     color: white;
+    margin-bottom: 10px;
 }
 
 .report-icon.blue {
@@ -405,7 +434,24 @@ label {
     margin-bottom: 0;
 }
 
+.description-column {
+    max-width: 300px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
 @media (max-width: 767px) {
+    :root {
+        --footer-height: 95px;
+    }
+
+    body {
+        padding-bottom: var(--footer-height);
+    }
+
     .sidebar {
         display: none;
     }
@@ -413,6 +459,7 @@ label {
     .main-content {
         margin-left: 0;
         width: 100%;
+        min-height: calc(100vh - var(--footer-height));
         padding: 18px;
     }
 
@@ -445,18 +492,21 @@ label {
 
     .bottom-navbar {
         text-align: center;
+        font-size: 12px;
+        padding: 10px;
     }
 }
 
 @media print {
-
     body {
         margin: 0;
         padding: 0;
         background: #fff;
     }
 
-    nav, footer, .no-print {
+    nav,
+    footer,
+    .no-print {
         display: none !important;
     }
 
@@ -471,42 +521,9 @@ label {
         font-size: 12px;
     }
 
-    h3, h4, h5 {
+    h3,
+    h4,
+    h5 {
         margin: 5px 0;
     }
-}
-
-.description-column {
-    max-width: 300px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; 
-    line-clamp: 3; 
-    -webkit-box-orient: vertical;
-}
-
-.report-card {
-    display: block;
-    padding: 20px;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition: all 0.2s ease;
-    height: 100%;
-}
-
-.report-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-}
-
-.report-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-bottom: 10px;
 }
