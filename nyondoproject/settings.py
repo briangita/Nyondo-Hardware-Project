@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 import dj_database_url
 
@@ -21,10 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_m%c!iy90$49yyw-t7%2=(28fbx=g%%houxw5=nddvcf8zfp(j'
+# Render sets RENDER=true on its servers; anywhere else is local development.
+ON_RENDER = 'RENDER' in os.environ
+
+# Production must set SECRET_KEY in the Render dashboard; the fallback is for local dev only.
+SECRET_KEY = os.environ['SECRET_KEY'] if ON_RENDER else os.environ.get(
+    'SECRET_KEY', 'django-insecure-local-dev-only'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not ON_RENDER
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 

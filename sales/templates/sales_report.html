@@ -25,44 +25,48 @@
     </div>
 </form>
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-primary border-4 h-100">
             <div class="card-body">
-                <h5>Total Quantity Sold</h5>
-                <h3>{{ total_quantity_sold|intcomma }}</h3>
+                <h6>Total Quantity Sold</h6>
+                <h4 class="mb-0">{{ total_quantity_sold|intcomma }}</h4>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card shadow-sm">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-success border-4 h-100">
             <div class="card-body">
-                <h5>Total Sales Amount</h5>
-                <h3>{{ total_sales_amount|floatformat:2|intcomma }}</h3>
+                <h6>Total Sales Amount</h6>
+                <h4 class="mb-0">{{ total_sales_amount|floatformat:2|intcomma }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-warning border-4 h-100">
+            <div class="card-body">
+                <h6>Output VAT</h6>
+                <h4 class="mb-0">{{ total_output_vat|floatformat:2|intcomma }}</h4>
             </div>
         </div>
     </div>
 </div>
 
 <div class="table-responsive">
-<table class="table table-bordered table-striped shadow-sm sales-table">
-    <thead class="table-dark">
+<table class="table table-hover sales-table">
+    <thead>
         <tr>
             <th>Invoice</th>
             <th>Customer</th>
-            <th>Customer Type</th>
             <th>Product</th>
-            <th>Category</th>
-            <th>Selling Price</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-            <th>Output VAT</th>
-            <th>Item Total</th>
-            <th>Invoice Total</th>
-            <th>Paid?</th>
-            <th>Payment Type</th>
-            <th>Sale Date</th>
+            <th class="text-end">Price</th>
+            <th class="text-end">Qty</th>
+            <th class="text-end">Subtotal</th>
+            <th class="text-end">VAT</th>
+            <th class="text-end">Item Total</th>
+            <th>Payment</th>
         </tr>
     </thead>
 
@@ -70,40 +74,36 @@
         {% for sale in sales %}
             {% for item in sale.items.all %}
             <tr>
-                <td>INV-{{ sale.id }}</td>
-                <td>{{ sale.customer_name }}</td>
-                <td>{{ sale.get_customer_type_display }}</td>
-                <td>{{ item.product.product_name }}</td>
-                <td>{{ item.product.category_name.category_name }}</td>
-                <td>{{ item.selling_price|floatformat:2|intcomma }}</td>
-                <td>{{ item.quantity|intcomma }}</td>
-                <td>{{ item.subtotal|floatformat:2|intcomma }}</td>
-                <td>{{ item.output_vat|floatformat:2|intcomma }}</td>
-                <td>{{ item.total_price|floatformat:2|intcomma }}</td>
-                <td>{{ sale.total_price|floatformat:2|intcomma }}</td>
-
+                <td class="text-nowrap">
+                    <span class="fw-semibold">INV-{{ sale.id }}</span>
+                    <div class="small text-muted">{{ sale.sale_date|date:"j M Y, H:i" }}</div>
+                </td>
+                <td>
+                    {{ sale.customer_name }}
+                    <div class="small text-muted">{{ sale.get_customer_type_display }}</div>
+                </td>
+                <td>
+                    {{ item.product.product_name }}
+                    <div class="small text-muted">{{ item.product.category_name.category_name }}</div>
+                </td>
+                <td class="text-end">{{ item.selling_price|floatformat:2|intcomma }}</td>
+                <td class="text-end">{{ item.quantity|intcomma }}</td>
+                <td class="text-end">{{ item.subtotal|floatformat:2|intcomma }}</td>
+                <td class="text-end">{{ item.output_vat|floatformat:2|intcomma }}</td>
+                <td class="text-end fw-semibold">{{ item.total_price|floatformat:2|intcomma }}</td>
                 <td>
                     {% if sale.customer_paid %}
                         <span class="badge bg-success">Paid</span>
+                        <div class="small text-muted">{{ sale.get_payment_type_display }}</div>
                     {% else %}
                         <span class="badge bg-danger">Not Paid</span>
                     {% endif %}
                 </td>
-
-                <td>
-                    {% if sale.customer_paid %}
-                        {{ sale.get_payment_type_display }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-
-                <td>{{ sale.sale_date|date:"j F Y, H:i" }}</td>
             </tr>
             {% endfor %}
         {% empty %}
         <tr>
-            <td colspan="14" class="text-center">No sales found for this period.</td>
+            <td colspan="9" class="text-center">No sales found for this period.</td>
         </tr>
         {% endfor %}
     </tbody>

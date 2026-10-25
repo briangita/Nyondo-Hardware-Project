@@ -7,39 +7,30 @@
 <div class="container-fluid px-0">
     <div class="row g-0 min-vh-100">
 
-        <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center text-white"
-             style="background: linear-gradient(135deg, #111827, #1f2937);">
+        <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center text-white auth-hero">
 
             <div class="text-center px-4" style="max-width: 400px;">
 
                 <img src="{% static 'images/logo.png' %}" 
-                     style="height: 250px;" class="mb-4">
+                     style="height: 180px;" class="mb-4" alt="Nyondo logo">
 
                 <h2 class="fw-bold mb-3">
                     Nyondo Hardware System
                 </h2>
 
-                <p class="text-light">
+                <p class="text-white-50">
                     Manage Sales, Stock, Accounts, and Customer schemes — all in one place.
                 </p>
 
             </div>
         </div>
 
-        <div class="col-lg-6 d-flex align-items-center justify-content-center bg-light">
+        <div class="col-lg-6 d-flex align-items-center justify-content-center p-3">
 
-            <div class="card shadow-lg border-0 p-4" style="width: 100%; max-width: 420px; border-radius: 12px;">
+            <div class="card auth-card border-0 p-4 p-sm-5">
 
                 <h3 class="fw-semibold mb-2">Welcome back</h3>
                 <p class="text-muted mb-4">Sign in to your account</p>
-
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
 
                 <form method="post" novalidate>
                     {% csrf_token %}
@@ -82,7 +73,7 @@
                         {% endif %}
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100 py-2 fw-semibold">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 py-2 fw-semibold">
                         Login
                     </button>
 

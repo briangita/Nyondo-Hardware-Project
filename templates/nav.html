@@ -1,60 +1,24 @@
 {% load static %}
 {% load roles %}
 
-<!-- TOP NAVBAR -->
-<nav class="navbar top-navbar">
-    <div class="container-fluid d-flex align-items-center justify-content-between">
+<!-- SIDEBAR: static on md+, offcanvas drawer on mobile -->
+<aside class="sidebar offcanvas-md offcanvas-start" tabindex="-1" id="mobileSidebar" aria-label="Main navigation">
 
-        <!-- LEFT -->
-        <div class="d-flex align-items-center gap-3">
-
-            <button class="btn mobile-menu-btn d-md-none"
-                    type="button"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#mobileSidebar">
-                <i class="bi bi-list fs-3"></i>
-            </button>
-
-            <a href="{% url 'sales_list' %}" class="brand-link text-decoration-none">
-                <div class="logo-box">
-                    <img src="{% static 'images/logo.png' %}" class="logo-img">
-                </div>
-
-                <div>
-                    <div class="brand-title">NYONDO GENERAL HARDWARE</div>
-                    <div class="brand-subtitle">Management System</div>
-                </div>
-            </a>
-        </div>
-
-        <!-- RIGHT -->
-        <div class="d-flex align-items-center gap-3">
-
-            {% if user.is_authenticated %}
-                <div class="user-badge">
-                    <i class="bi bi-person-circle fs-5"></i>
-                    <span>{{ user.username }}</span>
-                </div>
-
-                <a href="{% url 'logout' %}" class="btn btn-danger btn-sm px-3 rounded-pill">
-                    <i class="bi bi-box-arrow-right me-1"></i>
-                    Logout
-                </a>
-            {% else %}
-                <div class="user-badge">
-                    <i class="bi bi-person-circle fs-5"></i>
-                    <span>Guest</span>
-                </div>
-            {% endif %}
-
-        </div>
+    <div class="sidebar-brand">
+        <a href="{% url 'sales_list' %}" class="brand-link">
+            <span class="logo-box">
+                <img src="{% static 'images/logo.png' %}" class="logo-img" alt="Nyondo logo">
+            </span>
+            <span>
+                <span class="brand-title">Nyondo Hardware</span>
+                <span class="brand-subtitle">Management System</span>
+            </span>
+        </a>
+        <button type="button" class="btn-close btn-close-white d-md-none" data-bs-dismiss="offcanvas"
+                data-bs-target="#mobileSidebar" aria-label="Close"></button>
     </div>
-</nav>
 
-
-<!-- SIDEBAR -->
-<aside class="sidebar d-none d-md-block">
-    <nav class="nav flex-column">
+    <nav class="nav flex-column sidebar-nav">
 
         <!-- MAIN -->
         {% if user|has_role:"admin" or user|has_role:"accounts" %}
