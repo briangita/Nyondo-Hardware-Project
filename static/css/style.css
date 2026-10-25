@@ -83,20 +83,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .logo-box {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
-    border-radius: 10px;
-    background: #fff;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
 }
 
+/* logo-mark.png is just the N mark (transparent), cropped from logo.png */
 .logo-img {
-    width: 210%;
-    height: 210%;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
 
