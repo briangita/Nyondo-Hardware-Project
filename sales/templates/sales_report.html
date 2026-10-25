@@ -20,7 +20,7 @@
         <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="{% url 'sales_report' %}" class="btn btn-secondary">Reset</a>
-            <a href="{% url 'export_sales_report_excel' %}?start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="btn btn-success">Export Excel</a>
+            <a href="{% url 'export_sales_report_excel' %}?start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="btn btn-secondary">Export Excel</a>
         </div>
     </div>
 </form>

@@ -5,8 +5,10 @@
     --hw-bg: #f5f6f8;
     --hw-card: #ffffff;
     --hw-border: #e7e9ee;
-    --hw-orange: #f97316;
-    --hw-orange-dark: #ea580c;
+    /* #c2410c keeps white text at 5.2:1 (WCAG AA); brighter oranges fail */
+    --hw-orange: #c2410c;
+    --hw-orange-dark: #9a3412;
+    --hw-orange-bright: #f97316; /* decorative only: icons on dark, focus rings, bars */
     --hw-orange-soft: #fff4ec;
     --hw-sidebar: #0f172a;
     --sidebar-width: 260px;
@@ -15,10 +17,10 @@
 
     /* Recolor Bootstrap's primary to the brand orange */
     --bs-primary: var(--hw-orange);
-    --bs-primary-rgb: 249, 115, 22;
-    --bs-link-color: var(--hw-orange-dark);
-    --bs-link-color-rgb: 234, 88, 12;
-    --bs-link-hover-color: #c2410c;
+    --bs-primary-rgb: 194, 65, 12;
+    --bs-link-color: var(--hw-orange);
+    --bs-link-color-rgb: 194, 65, 12;
+    --bs-link-hover-color: var(--hw-orange-dark);
     --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --bs-border-radius: 10px;
 }
@@ -123,7 +125,7 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar-section-title {
     font-size: 0.68rem;
     font-weight: 600;
-    color: #64748b;
+    color: #94a3b8;
     margin: 20px 12px 6px;
     letter-spacing: 0.1em;
 }
@@ -155,11 +157,11 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar .nav-link.active {
     background: rgba(249, 115, 22, 0.14);
     color: #fff;
-    box-shadow: inset 3px 0 0 var(--hw-orange);
+    box-shadow: inset 3px 0 0 var(--hw-orange-bright);
 }
 
 .sidebar .nav-link.active i {
-    color: var(--hw-orange);
+    color: var(--hw-orange-bright);
 }
 
 /* ---------- MAIN AREA ---------- */
@@ -195,8 +197,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-icon {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -267,13 +269,17 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow) !important;
 }
 
-/* KPI cards: thin border with a coloured left accent */
+/* KPI cards: plain neutral tiles; the number is the focus, not the frame */
 .card.border-start.border-4 {
-    border-width: 1px !important;
-    border-left-width: 4px !important;
-    border-top-color: var(--hw-border) !important;
-    border-right-color: var(--hw-border) !important;
-    border-bottom-color: var(--hw-border) !important;
+    border: 1px solid var(--hw-border) !important;
+}
+
+.card.border-start.border-4 h4,
+.card.border-start.border-4 h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0;
 }
 
 .card.border-start.border-4 h6 {
@@ -333,6 +339,10 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 10px;
 }
 
+.btn > .bi:first-child:not(:only-child) {
+    margin-right: 6px;
+}
+
 .btn-primary,
 .btn-success {
     --bs-btn-bg: var(--hw-orange);
@@ -375,6 +385,136 @@ label,
     font-weight: 600;
 }
 
+/* ---------- COLOUR DISCIPLINE ----------
+   Neutral greys for structure, orange for the main action and active state,
+   green/red/amber only where they carry meaning (paid, unpaid, warnings).
+   Templates use many Bootstrap colour utilities; these rules tame them here. */
+
+/* Card headers: no solid colour bars */
+.card .card-header[class*="bg-"] {
+    background: transparent !important;
+    color: var(--hw-ink) !important;
+}
+
+/* Secondary buttons (Back, Cancel, Invoice...): quiet outline */
+.btn-secondary,
+.btn-dark,
+.btn-info,
+.btn-warning,
+.btn-light {
+    --bs-btn-bg: #fff;
+    --bs-btn-color: var(--hw-ink);
+    --bs-btn-border-color: #dfe3ea;
+    --bs-btn-hover-bg: #f8fafc;
+    --bs-btn-hover-color: var(--hw-ink);
+    --bs-btn-hover-border-color: #cbd5e1;
+    --bs-btn-active-bg: #f1f5f9;
+    --bs-btn-active-color: var(--hw-ink);
+    --bs-btn-active-border-color: #cbd5e1;
+}
+
+/* Destructive: red text until hovered */
+.btn-danger {
+    --bs-btn-bg: #fff;
+    --bs-btn-color: #b42318;
+    --bs-btn-border-color: #fecdca;
+    --bs-btn-hover-bg: #d92d20;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-border-color: #d92d20;
+    --bs-btn-active-bg: #b42318;
+    --bs-btn-active-border-color: #b42318;
+}
+
+/* Inside tables, row actions stay neutral so orange doesn't repeat down every row */
+.table .btn-primary,
+.table .btn-success {
+    --bs-btn-bg: #fff;
+    --bs-btn-color: var(--hw-ink);
+    --bs-btn-border-color: #dfe3ea;
+    --bs-btn-hover-bg: var(--hw-orange-soft);
+    --bs-btn-hover-color: var(--hw-orange-dark);
+    --bs-btn-hover-border-color: #fed7aa;
+}
+
+/* Badges: soft tints; only status colours keep a hue */
+.badge {
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border-radius: 999px;
+}
+
+.badge.bg-success { background: #ecfdf3 !important; color: #067647 !important; }
+.badge.bg-danger { background: #fef3f2 !important; color: #b42318 !important; }
+.badge.bg-warning { background: #fffaeb !important; color: #b54708 !important; }
+
+.badge.bg-primary,
+.badge.bg-info,
+.badge.bg-dark,
+.badge.bg-secondary {
+    background: #f1f5f9 !important;
+    color: var(--hw-text) !important;
+}
+
+/* Alerts: neutral surface, colour only on the edge */
+.alert {
+    background: #fff;
+    border: 1px solid var(--hw-border);
+    border-left: 3px solid var(--hw-muted);
+    color: var(--hw-ink);
+}
+
+.alert-danger { border-left-color: #d92d20; }
+.alert-warning { border-left-color: #f79009; }
+.alert-success { border-left-color: #17b26a; }
+.alert-info,
+.alert-primary { border-left-color: var(--hw-orange); }
+
+/* Progress bars: one data colour */
+.progress {
+    background: #f1f5f9;
+}
+
+.progress-bar[class*="bg-"] {
+    background: var(--hw-orange-bright) !important;
+}
+
+/* Totals rows: light and bold instead of black */
+.table-dark {
+    --bs-table-bg: #f8fafc;
+    --bs-table-color: var(--hw-ink);
+    --bs-table-border-color: var(--hw-border);
+    --bs-table-striped-bg: #f8fafc;
+    --bs-table-hover-bg: #f1f5f9;
+    font-weight: 600;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-bg-type: #fafbfc;
+}
+
+/* Form pages wrap everything in one card inside the page card: drop the second frame */
+.content-card > div.card:only-child {
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.content-card > div.card:only-child > .card-header {
+    padding: 0 0 16px;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.content-card > div.card:only-child > .card-body {
+    padding: 20px 0 0;
+}
+
+/* Amber text is unreadable on white at Bootstrap's default shade */
+.text-warning { color: #b54708 !important; }
+
+/* Consistent page titles */
+.content-card h2 { font-size: 1.5rem; }
+.content-card h3 { font-size: 1.35rem; }
+
 /* ---------- REPORTS CENTER ---------- */
 .report-card {
     display: block;
@@ -403,17 +543,11 @@ label,
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    color: #fff;
     margin-bottom: 12px;
+    /* one icon style for every report, whatever bg-* the template sets */
+    background: var(--hw-orange-soft) !important;
+    color: var(--hw-orange-dark) !important;
 }
-
-.report-icon.blue { background: #2563eb; }
-.report-icon.green { background: #16a34a; }
-.report-icon.dark { background: #0f172a; }
-.report-icon.orange { background: #f59e0b; }
-.report-icon.cyan { background: #06b6d4; }
-.report-icon.red { background: #dc2626; }
-.report-icon.gray { background: #64748b; }
 
 .report-card h5 {
     font-size: 1.1rem;
@@ -426,6 +560,31 @@ label,
     font-size: 0.9rem;
     line-height: 1.6;
     margin-bottom: 0;
+}
+
+/* ---------- ACCESSIBILITY ---------- */
+:focus-visible {
+    outline: 2px solid var(--hw-orange-bright);
+    outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .report-card:hover {
+        transform: none;
+    }
 }
 
 /* ---------- MOBILE ---------- */
