@@ -1,166 +1,179 @@
 {% extends "base.html" %}
 {% load humanize %}
 
+{% block page_class %}page-plain{% endblock %}
+
 {% block content %}
 
-<!-- Header -->
-<div class="mb-4">
-    <h3 class="mb-1">Manager Dashboard</h3>
-    <p class="text-muted">Business overview and risk indicators.</p>
+<div class="page-header">
+    <div>
+        <h1>Manager Dashboard</h1>
+        <p>Business overview and risk indicators.</p>
+    </div>
+    <a href="{% url 'reports_home' %}" class="btn btn-secondary">
+        <i class="bi bi-file-earmark-bar-graph"></i>All reports
+    </a>
 </div>
 
-<!-- Alerts -->
-{% if alerts %}
-<div class="mb-4">
-    {% for alert in alerts %}
-    <div class="alert alert-{{ alert.type }}">
-        ⚠ {{ alert.message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
-
-<!-- Financial Overview -->
-<div class="row g-3 mb-4">
-
-    <div class="col-md-3">
-        <div class="card border-start border-success border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Total Sales</h6>
-                <h4>{{ total_sales|intcomma }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card border-start 
-            {% if profit_margin < 10 %}border-danger
-            {% elif profit_margin < 25 %}border-warning
-            {% else %}border-success{% endif %} border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Profit Margin</h6>
-                <h4>{{ profit_margin|floatformat:1 }}%</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card border-start 
-            {% if unpaid_sales > 0 %}border-danger{% else %}border-success{% endif %} border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Unpaid Sales</h6>
-                <h4>{{ unpaid_sales|intcomma }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card border-start border-primary border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Output VAT</h6>
-                <h4>{{ output_vat|intcomma }}</h4>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- Top Products -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header">Top Products</div>
-    <div class="card-body">
-
-        {% for item in top_products %}
-        <div class="mb-3">
-            <div class="d-flex justify-content-between">
-                <span>{{ item.product__product_name }}</span>
-                <span class="badge bg-dark">{{ item.quantity }}</span>
-            </div>
-            <div class="progress mt-1" style="height:6px;">
-                <div class="progress-bar bg-success"
-                     style="width: {{ item.percentage|floatformat:0 }}%;">
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-
-    </div>
-</div>
-
-<!-- Inventory -->
-<div class="row g-3 mb-4">
-
-    <div class="col-md-4">
-        <div class="card border-start border-primary border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Stock Value</h6>
-                <h4>{{ total_stock_value|intcomma }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card border-start 
-            {% if low_stock_count > 0 %}border-danger{% else %}border-success{% endif %}
-            border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Low Stock</h6>
-                <h4>{{ low_stock_count }}</h4>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- Suppliers -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-warning">Supplier Payables</div>
-    <div class="card-body">
-        <h4 class="{% if total_supplier_payables > 0 %}text-danger{% endif %}">
-            {{ total_supplier_payables|intcomma }}
-        </h4>
-    </div>
-</div>
-
-<!-- Scheme -->
+<h2 class="section-title mt-0">Sales</h2>
 <div class="row g-3">
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-cash-stack" aria-hidden="true"></i>Total sales</div>
+            <div class="stat-value"><small>UGX</small>{{ total_sales|floatformat:0|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i>Gross margin</div>
+            <div class="stat-value">{{ profit_margin|floatformat:1 }}%</div>
+            <div class="stat-meta">
+                {% if profit_margin < 10 %}<span class="status status-bad">Low</span>
+                {% elif profit_margin < 25 %}<span class="status status-warn">Fair</span>
+                {% else %}<span class="status status-good">Healthy</span>{% endif %}
+                · UGX {{ gross_profit|floatformat:0|intcomma }} profit
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Unpaid sales</div>
+            <div class="stat-value"><small>UGX</small>{{ unpaid_sales|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">
+                {% if unpaid_sales > 0 %}<span class="status status-bad">Outstanding</span>
+                {% else %}<span class="status status-good">All paid</span>{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-receipt" aria-hidden="true"></i>Output VAT</div>
+            <div class="stat-value"><small>UGX</small>{{ output_vat|floatformat:0|intcomma }}</div>
+        </div>
+    </div>
+</div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm">
+<h2 class="section-title">Inventory &amp; suppliers</h2>
+<div class="row g-3">
+    <div class="col-6 col-xl-4">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-box-seam" aria-hidden="true"></i>Stock value (at cost)</div>
+            <div class="stat-value"><small>UGX</small>{{ total_stock_value|floatformat:0|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-4">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>Low stock items</div>
+            <div class="stat-value">{{ low_stock_count }}</div>
+            <div class="stat-meta">
+                {% if low_stock_count %}<span class="status status-warn">Reorder soon</span>
+                {% else %}<span class="status status-good">Well stocked</span>{% endif %}
+                · 5 units or fewer
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-4">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-truck" aria-hidden="true"></i>Supplier payables</div>
+            <div class="stat-value"><small>UGX</small>{{ total_supplier_payables|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">
+                {% if total_supplier_payables > 0 %}<span class="status status-bad">Owed to suppliers</span>
+                {% else %}<span class="status status-good">Nothing owed</span>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="section-title">Customer scheme</h2>
+<div class="row g-3">
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-people" aria-hidden="true"></i>Customers</div>
+            <div class="stat-value">{{ total_scheme_customers }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-wallet2" aria-hidden="true"></i>Deposits</div>
+            <div class="stat-value"><small>UGX</small>{{ total_deposits|floatformat:0|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-bag-check" aria-hidden="true"></i>Goods taken</div>
+            <div class="stat-value"><small>UGX</small>{{ goods_value|floatformat:0|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-piggy-bank" aria-hidden="true"></i>Scheme balance</div>
+            <div class="stat-value"><small>UGX</small>{{ scheme_balance|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">
+                {% if scheme_balance < 0 %}<span class="status status-bad">Over-drawn</span>
+                {% else %}<span class="status status-good">In credit</span>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-2">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header panel-header">
+                Top products
+                <a href="{% url 'product_profitability_report' %}">Profitability</a>
+            </div>
             <div class="card-body">
-                <h6>Customers</h6>
-                <h4>{{ total_scheme_customers }}</h4>
+                <ul class="bar-list">
+                    {% for item in top_products %}
+                    <li>
+                        <div class="bar-row">
+                            <span>{{ item.product__product_name }}</span>
+                            <span>{{ item.quantity|intcomma }} sold</span>
+                        </div>
+                        <div class="bar"><span style="width: {{ item.percentage|floatformat:0 }}%"></span></div>
+                    </li>
+                    {% empty %}
+                    <li class="empty-state">No sales yet.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6>Deposits</h6>
-                <h4>{{ total_deposits|intcomma }}</h4>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header panel-header">
+                Unpaid invoices
+                <a href="{% url 'receivables_report' %}">Receivables</a>
+            </div>
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Customer</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in unpaid_customers|slice:":6" %}
+                        <tr>
+                            <td class="text-nowrap">
+                                <span class="fw-semibold">INV-{{ sale.id }}</span>
+                                <div class="small text-muted">{{ sale.sale_date|date:"j M Y" }}</div>
+                            </td>
+                            <td>{{ sale.customer_name }}</td>
+                            <td class="text-end fw-semibold">{{ sale.total_price|floatformat:0|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="empty-state">No unpaid invoices.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6>Goods Taken</h6>
-                <h4>{{ goods_value|intcomma }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card border-start border-danger border-4 shadow-sm">
-            <div class="card-body">
-                <h6>Scheme Balance</h6>
-                <h4>{{ scheme_balance|intcomma }}</h4>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 {% endblock %}

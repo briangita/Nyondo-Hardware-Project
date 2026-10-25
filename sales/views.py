@@ -443,14 +443,23 @@ def sales_dashboard(request):
 
     total_invoices = Sales.objects.count()
 
-    # Daily Sales
-    daily_sales = (
+    unpaid_count = Sales.objects.filter(customer_paid=False).count()
+
+    average_sale = total_sales / total_invoices if total_invoices else Decimal("0.00")
+
+    # Daily Sales: the 7 most recent trading days, newest first
+    daily_sales = list(
         Sales.objects
         .annotate(day=TruncDate("sale_date"))
         .values("day")
         .annotate(total=Sum("total_price"))
-        .order_by("day")
+        .order_by("-day")[:7]
     )
+
+    max_day = max([d["total"] for d in daily_sales], default=0) or 1
+
+    for item in daily_sales:
+        item["percentage"] = item["total"] / max_day * 100
 
     # Top Products
     top_products = (
@@ -499,6 +508,8 @@ def sales_dashboard(request):
         "unpaid_sales": unpaid_sales,
         "output_vat": output_vat,
         "total_invoices": total_invoices,
+        "unpaid_count": unpaid_count,
+        "average_sale": average_sale,
         "daily_sales": daily_sales,
         "top_products": top_products,
         "monthly_data": monthly_data,

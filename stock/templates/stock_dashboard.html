@@ -1,94 +1,106 @@
 {% extends "base.html" %}
 {% load humanize %}
 
+{% block page_class %}page-plain{% endblock %}
+
 {% block content %}
 
-<h3 class="mb-4">Stock Dashboard</h3>
+<div class="page-header">
+    <div>
+        <h1>Stock Dashboard</h1>
+        <p>Inventory levels, fast movers and supplier balances.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'stock_report' %}" class="btn btn-secondary">Stock report</a>
+        <a href="{% url 'create_stock_receipt' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Receive stock</a>
+    </div>
+</div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-start border-success border-4">
-            <div class="card-body">
-                <h6>Total Stock Value</h6>
-                <h4>{{ total_stock_value|floatformat:2|intcomma }}</h4>
+<div class="row g-3">
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-box-seam" aria-hidden="true"></i>Stock value (at cost)</div>
+            <div class="stat-value"><small>UGX</small>{{ total_stock_value|floatformat:0|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-tags" aria-hidden="true"></i>Products</div>
+            <div class="stat-value">{{ product_count }}</div>
+            <div class="stat-meta"><a href="{% url 'product_list' %}">Manage products</a></div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>Low stock items</div>
+            <div class="stat-value">{{ low_stock_count }}</div>
+            <div class="stat-meta">
+                {% if low_stock_count %}<span class="status status-warn">Reorder soon</span>
+                {% else %}<span class="status status-good">Well stocked</span>{% endif %}
+                · 5 units or fewer
             </div>
         </div>
     </div>
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-start border-danger border-4">
-            <div class="card-body">
-                <h6>Low Stock Items</h6>
-                <h4>{{ low_stock_count }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-start border-warning border-4">
-            <div class="card-body">
-                <h6>Stock Health</h6>
-                <h4>Active</h4>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-truck" aria-hidden="true"></i>Owed to suppliers</div>
+            <div class="stat-value"><small>UGX</small>{{ total_supplier_payables|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">
+                {% if unpaid_supplier_count %}<span class="status status-bad">{{ unpaid_supplier_count }} unpaid invoice{{ unpaid_supplier_count|pluralize }}</span>
+                {% else %}<span class="status status-good">Nothing owed</span>{% endif %}
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <!-- Stock Levels -->
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">Stock Levels</div>
+<div class="row g-3 mt-2">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header panel-header">
+                Lowest stock
+                <a href="{% url 'stock_report' %}">All products</a>
+            </div>
             <div class="card-body">
-                {% for item in stock_levels %}
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <span>{{ item.product }}</span>
-                        <strong>{{ item.stock }}</strong>
-                    </div>
-
-                    <div class="progress">
-                        <div class="progress-bar
-                            {% if item.stock <= 5 %}
-                                bg-danger
-                            {% elif item.stock <= 20 %}
-                                bg-warning
-                            {% else %}
-                                bg-success
-                            {% endif %}"
-                            style="width: {{ item.stock }}%">
+                <ul class="bar-list">
+                    {% for item in stock_levels %}
+                    <li>
+                        <div class="bar-row">
+                            <span>
+                                {{ item.product }}
+                                {% if item.level == "low" %}<span class="status status-bad ms-2">Low</span>
+                                {% elif item.level == "mid" %}<span class="status status-warn ms-2">Running down</span>{% endif %}
+                            </span>
+                            <span>{{ item.stock|intcomma }} in stock</span>
                         </div>
-                    </div>
-                </div>
-                {% empty %}
-                <p>No stock data available.</p>
-                {% endfor %}
+                        <div class="bar bar-{{ item.level }}"><span style="width: {{ item.percentage|floatformat:0 }}%"></span></div>
+                    </li>
+                    {% empty %}
+                    <li class="empty-state">No products yet.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Low Stock -->
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-danger text-white">Low Stock Alerts</div>
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header">Fast selling items</div>
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Product</th>
-                            <th>Current Stock</th>
+                            <th class="text-end">Sold</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in low_stock_products %}
+                        {% for item in fast_selling_items %}
                         <tr>
-                            <td>{{ item.product.product_name }}</td>
-                            <td>{{ item.current_stock }}</td>
+                            <td>{{ item.product__product_name }}</td>
+                            <td class="text-end fw-semibold">{{ item.total_sold|intcomma }}</td>
                         </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center">No low stock items.</td>
-                        </tr>
+                        <tr><td colspan="2" class="empty-state">No sales yet.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -97,113 +109,67 @@
     </div>
 </div>
 
-<div class="row g-4 mt-2">
-    <!-- Paid Suppliers -->
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">Paid Suppliers</div>
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Supplier</th>
-                            <th>Invoice</th>
-                            <th>Product</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for receipt in paid_suppliers %}
-                        <tr>
-                            <td>{{ receipt.supplier_name }}</td>
-                            <td>{{ receipt.supplier_invoice_number }}</td>
-                            <td>{{ receipt.product.product_name }}</td>
-                            <td>{{ receipt.total_amount_due|floatformat:2|intcomma }}</td>
-                            <td>{{ receipt.date_received|date:"d M Y" }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center">No paid suppliers found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="row g-3 mt-2">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header panel-header">
+                Unpaid supplier invoices
+                <a href="{% url 'stock_receipt_list' %}">All receipts</a>
             </div>
-        </div>
-    </div>
-
-    <!-- Unpaid Suppliers -->
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-warning">Unpaid Suppliers</div>
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Supplier</th>
-                            <th>Invoice</th>
                             <th>Product</th>
-                            <th>Amount Due</th>
-                            <th>Date</th>
+                            <th class="text-end">Amount due</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for receipt in unpaid_suppliers %}
                         <tr>
-                            <td>{{ receipt.supplier_name }}</td>
-                            <td>{{ receipt.supplier_invoice_number }}</td>
+                            <td>
+                                {{ receipt.supplier_name }}
+                                <div class="small text-muted">{{ receipt.supplier_invoice_number }} · {{ receipt.date_received|date:"j M Y" }}</div>
+                            </td>
                             <td>{{ receipt.product.product_name }}</td>
-                            <td>{{ receipt.total_amount_due|floatformat:2|intcomma }}</td>
-                            <td>{{ receipt.date_received|date:"d M Y" }}</td>
+                            <td class="text-end fw-semibold">{{ receipt.total_amount_due|floatformat:0|intcomma }}</td>
                         </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center">No unpaid suppliers found.</td>
-                        </tr>
+                        <tr><td colspan="3" class="empty-state">Nothing owed to suppliers.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
 
-<!-- ✅ Fast Selling Items -->
-<div class="row g-4 mt-2">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                Fast Selling Items
-            </div>
-
-            <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
-
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Recently paid suppliers</div>
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table">
                     <thead>
                         <tr>
+                            <th>Supplier</th>
                             <th>Product</th>
-                            <th class="text-end">Quantity Sold</th>
+                            <th class="text-end">Amount</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {% for item in fast_selling_items %}
+                        {% for receipt in paid_suppliers %}
                         <tr>
-                            <td>{{ item.product__product_name }}</td>
-                            <td class="text-end">
-                                {{ item.total_sold|intcomma }}
+                            <td>
+                                {{ receipt.supplier_name }}
+                                <div class="small text-muted">{{ receipt.supplier_invoice_number }} · {{ receipt.date_received|date:"j M Y" }}</div>
                             </td>
+                            <td>{{ receipt.product.product_name }}</td>
+                            <td class="text-end fw-semibold">{{ receipt.total_amount_due|floatformat:0|intcomma }}</td>
                         </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center">
-                                No sales data available.
-                            </td>
-                        </tr>
+                        <tr><td colspan="3" class="empty-state">No paid supplier invoices yet.</td></tr>
                         {% endfor %}
                     </tbody>
-
                 </table>
             </div>
         </div>

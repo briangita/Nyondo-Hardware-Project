@@ -57,7 +57,8 @@
                 </div>
             {% endfor %}
 
-            <div class="content-card">
+            {# Dashboards override this with "page-plain" so their panels sit on the page background #}
+            <div class="{% block page_class %}content-card{% endblock %}">
                 {% block content %}
                 {% endblock %}
             </div>

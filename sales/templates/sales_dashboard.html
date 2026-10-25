@@ -1,197 +1,160 @@
 {% extends "base.html" %}
 {% load humanize %}
 
+{% block page_class %}page-plain{% endblock %}
+
 {% block content %}
 
-<!-- Header -->
-<div class="mb-4">
-    <h3 class="mb-1">Sales Dashboard</h3>
-    <p class="text-muted">Overview of sales performance and trends.</p>
+<div class="page-header">
+    <div>
+        <h1>Sales Dashboard</h1>
+        <p>Overview of sales performance and trends.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sales_report' %}" class="btn btn-secondary">Sales report</a>
+        <a href="{% url 'create_sale' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>New sale</a>
+    </div>
 </div>
 
-<!-- KPI Cards -->
-<div class="row g-3 mb-4">
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-success border-4 h-100">
-            <div class="card-body">
-                <h6 class="text-muted">Total Sales</h6>
-                <h4>{{ total_sales|floatformat:2|intcomma }}</h4>
+<div class="row g-3">
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-cash-stack" aria-hidden="true"></i>Total sales</div>
+            <div class="stat-value"><small>UGX</small>{{ total_sales|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">{{ total_invoices }} invoice{{ total_invoices|pluralize }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Unpaid sales</div>
+            <div class="stat-value"><small>UGX</small>{{ unpaid_sales|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">
+                {% if unpaid_count %}<span class="status status-bad">{{ unpaid_count }} unpaid</span>
+                {% else %}<span class="status status-good">All paid</span>{% endif %}
             </div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-danger border-4 h-100">
-            <div class="card-body">
-                <h6 class="text-muted">Unpaid Sales</h6>
-                <h4>{{ unpaid_sales|floatformat:2|intcomma }}</h4>
-            </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-receipt" aria-hidden="true"></i>Output VAT</div>
+            <div class="stat-value"><small>UGX</small>{{ output_vat|floatformat:0|intcomma }}</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-primary border-4 h-100">
-            <div class="card-body">
-                <h6 class="text-muted">Output VAT</h6>
-                <h4>{{ output_vat|floatformat:2|intcomma }}</h4>
-            </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-calculator" aria-hidden="true"></i>Average sale</div>
+            <div class="stat-value"><small>UGX</small>{{ average_sale|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">per invoice</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-warning border-4 h-100">
-            <div class="card-body">
-                <h6 class="text-muted">Invoices</h6>
-                <h4>{{ total_invoices }}</h4>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<!-- Top Products + Daily Sales -->
-<div class="row g-4">
-
-    <!-- Top Products -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold">Top Selling Products</div>
+<div class="row g-3 mt-2">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Recent trading days</div>
             <div class="card-body">
-
-                {% for item in top_products %}
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <span>{{ item.product__product_name }}</span>
-                        <span class="badge bg-dark">{{ item.quantity|intcomma }}</span>
-                    </div>
-
-                    <div class="progress mt-1" style="height: 6px;">
-                        <div class="progress-bar bg-success"
-                             style="width: {{ item.percentage|floatformat:0 }}%;">
+                <ul class="bar-list">
+                    {% for item in daily_sales %}
+                    <li>
+                        <div class="bar-row">
+                            <span>{{ item.day|date:"D, j M Y" }}</span>
+                            <span>UGX {{ item.total|floatformat:0|intcomma }}</span>
                         </div>
-                    </div>
-                </div>
-                {% empty %}
-                <p class="text-muted">No sales data available.</p>
-                {% endfor %}
-
+                        <div class="bar"><span style="width: {{ item.percentage|floatformat:0 }}%"></span></div>
+                    </li>
+                    {% empty %}
+                    <li class="empty-state">No sales yet.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Daily Sales -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold">Daily Sales</div>
-            <div class="card-body table-responsive">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Top selling products</div>
+            <div class="card-body">
+                <ul class="bar-list">
+                    {% for item in top_products %}
+                    <li>
+                        <div class="bar-row">
+                            <span>{{ item.product__product_name }}</span>
+                            <span>{{ item.quantity|intcomma }} sold</span>
+                        </div>
+                        <div class="bar"><span style="width: {{ item.percentage|floatformat:0 }}%"></span></div>
+                    </li>
+                    {% empty %}
+                    <li class="empty-state">No sales yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <table class="table table-sm table-hover">
-                    <thead class="table-light">
+<div class="row g-3 mt-2">
+    <div class="{% if monthly_data|length > 1 %}col-lg-8{% else %}col-12{% endif %}">
+        <div class="card h-100">
+            <div class="card-header panel-header">
+                Unpaid invoices
+                <a href="{% url 'sales_list' %}">All sales</a>
+            </div>
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <th>Date</th>
-                            <th class="text-end">Sales</th>
+                            <th>Invoice</th>
+                            <th>Customer</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Action</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {% for item in daily_sales %}
+                        {% for sale in unpaid_customers %}
                         <tr>
-                            <td>{{ item.day|date:"d M Y" }}</td>
+                            <td class="text-nowrap">
+                                <span class="fw-semibold">INV-{{ sale.id }}</span>
+                                <div class="small text-muted">{{ sale.sale_date|date:"j M Y" }}</div>
+                            </td>
+                            <td>
+                                {{ sale.customer_name }}
+                                <div class="small text-muted">{{ sale.get_customer_type_display }}</div>
+                            </td>
+                            <td class="text-end fw-semibold">{{ sale.total_price|floatformat:0|intcomma }}</td>
                             <td class="text-end">
-                                {{ item.total|floatformat:2|intcomma }}
+                                <a href="{% url 'invoice' sale.id %}" class="btn btn-secondary btn-sm">Invoice</a>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center text-muted">
-                                No sales yet.
-                            </td>
-                        </tr>
+                        <tr><td colspan="4" class="empty-state">No unpaid invoices.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
-
             </div>
         </div>
     </div>
 
-</div>
-
-<!-- Monthly Trend (NO JS) -->
-<div class="card shadow-sm mt-4">
-    <div class="card-header fw-semibold">
-        Monthly Sales Trend
-    </div>
-
-    <div class="card-body">
-
-        {% for item in monthly_data %}
-        <div class="mb-3">
-
-            <div class="d-flex justify-content-between">
-                <span>{{ item.month }}</span>
-                <strong>{{ item.total|floatformat:2|intcomma }}</strong>
+    {% if monthly_data|length > 1 %}
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">Monthly sales</div>
+            <div class="card-body">
+                <ul class="bar-list">
+                    {% for item in monthly_data %}
+                    <li>
+                        <div class="bar-row">
+                            <span>{{ item.month }}</span>
+                            <span>{{ item.total|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="bar"><span style="width: {{ item.percentage|floatformat:0 }}%"></span></div>
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
-
-            <div class="progress mt-1" style="height: 8px;">
-                <div class="progress-bar bg-primary"
-                     style="width: {{ item.percentage|floatformat:0 }}%;">
-                </div>
-            </div>
-
         </div>
-        {% empty %}
-        <p class="text-muted">No monthly data available.</p>
-        {% endfor %}
-
     </div>
-</div>
-
-<!-- Unpaid Customers -->
-<div class="card shadow-sm mt-4">
-
-    <div class="card-header bg-danger text-white fw-semibold">
-        Unpaid Invoices
-    </div>
-
-    <div class="card-body table-responsive">
-
-        <table class="table table-hover">
-
-            <thead>
-                <tr>
-                    <th>Customer</th>
-                    <th>Type</th>
-                    <th>Invoice</th>
-                    <th class="text-end">Amount</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for sale in unpaid_customers %}
-                <tr>
-                    <td>{{ sale.customer_name }}</td>
-                    <td><span class="badge bg-secondary">{{ sale.customer_type }}</span></td>
-                    <td>INV-{{ sale.id }}</td>
-                    <td class="text-end">
-                        <strong>{{ sale.total_price|floatformat:2|intcomma }}</strong>
-                    </td>
-                    <td>{{ sale.sale_date|date:"d M Y" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        No unpaid customers.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-        </table>
-
-    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

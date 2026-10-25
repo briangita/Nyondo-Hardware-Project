@@ -361,21 +361,43 @@ def stock_dashboard(request):
                 "current_stock": current_stock,
             })
 
+    # Lowest stock first, bars scaled against the best-stocked product
+    stock_levels.sort(key=lambda s: s["stock"])
+    max_stock = max([s["stock"] for s in stock_levels], default=0) or 1
+
+    for item in stock_levels:
+        item["percentage"] = max(item["stock"], 0) / max_stock * 100
+        item["level"] = "low" if item["stock"] <= 5 else "mid" if item["stock"] <= 20 else "ok"
+
+    fast_selling_items = (
+        SaleItem.objects
+        .values("product__product_name")
+        .annotate(total_sold=Sum("quantity"))
+        .order_by("-total_sold")[:5]
+    )
+
     paid_suppliers = StockReceipt.objects.filter(
         supplier_paid=True
-    ).order_by("-date_received")[:10]
+    ).select_related("product").order_by("-date_received")[:5]
 
-    unpaid_suppliers = StockReceipt.objects.filter(
-        supplier_paid=False
-    ).order_by("-date_received")[:10]
+    unpaid_receipts = StockReceipt.objects.filter(supplier_paid=False)
+
+    unpaid_suppliers = unpaid_receipts.select_related("product").order_by("-date_received")[:5]
+
+    total_supplier_payables = unpaid_receipts.aggregate(
+        total=Sum("total_amount_due")
+    )["total"] or Decimal("0.00")
 
     return render(request, "stock_dashboard.html", {
         "total_stock_value": total_stock_value,
+        "product_count": len(products),
         "low_stock_count": len(low_stock_products),
-        "low_stock_products": low_stock_products[:5],
-        "stock_levels": stock_levels[:10],
+        "stock_levels": stock_levels[:8],
+        "fast_selling_items": fast_selling_items,
         "paid_suppliers": paid_suppliers,
         "unpaid_suppliers": unpaid_suppliers,
+        "unpaid_supplier_count": unpaid_receipts.count(),
+        "total_supplier_payables": total_supplier_payables,
     })
 
 @login_required

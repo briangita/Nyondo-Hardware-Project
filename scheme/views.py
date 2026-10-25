@@ -148,11 +148,24 @@ def scheme_dashboard(request):
 
     scheme_balance = total_deposits - goods_value
 
+    # Share of deposits already taken as goods (can exceed 100% if over-drawn)
+    deposits_used = (goods_value / total_deposits * 100) if total_deposits > 0 else Decimal("0")
+
+    recent_payments = SchemePayment.objects.select_related("customer").order_by("-payment_date")[:5]
+
+    recent_pickups = SchemeGoodsPickup.objects.select_related(
+        "customer", "product"
+    ).order_by("-pickup_date")[:5]
+
     return render(request, "scheme_dashboard.html", {
         "total_customers": total_customers,
         "total_deposits": total_deposits,
         "goods_value": goods_value,
         "scheme_balance": scheme_balance,
+        "deposits_used": deposits_used,
+        "deposits_used_bar": min(deposits_used, 100),
+        "recent_payments": recent_payments,
+        "recent_pickups": recent_pickups,
     })
     
 @login_required

@@ -88,6 +88,7 @@ def manager_dashboard(request):
                 "current_stock": stock
             })
 
+    low_stock_products.sort(key=lambda p: p["current_stock"])
     low_stock_count = len(low_stock_products)
 
     #  SUPPLIERS 
@@ -111,33 +112,6 @@ def manager_dashboard(request):
 
     scheme_balance = total_deposits - goods_value
 
-    # ------------------ ALERTS ------------------
-    alerts = []
-
-    if unpaid_sales > 0:
-        alerts.append({
-            "type": "danger",
-            "message": f"Unpaid sales: UGX {int(unpaid_sales):,}"
-        })
-
-    if low_stock_count > 0:
-        alerts.append({
-            "type": "warning",
-            "message": f"{low_stock_count} low stock items"
-        })
-
-    if total_supplier_payables > 0:
-        alerts.append({
-            "type": "danger",
-            "message": f"Supplier payables: UGX {int(total_supplier_payables):,}"
-        })
-
-    if scheme_balance < 0:
-        alerts.append({
-            "type": "danger",
-            "message": "Scheme imbalance detected"
-        })
-
     return render(request, "manager_dashboard.html", {
         "total_sales": total_sales,
         "unpaid_sales": unpaid_sales,
@@ -160,7 +134,6 @@ def manager_dashboard(request):
         "goods_value": goods_value,
         "scheme_balance": scheme_balance,
 
-        "alerts": alerts,
     })
 
 @login_required

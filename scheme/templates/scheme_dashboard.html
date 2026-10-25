@@ -1,94 +1,128 @@
 {% extends "base.html" %}
 {% load humanize %}
 
+{% block page_class %}page-plain{% endblock %}
+
 {% block content %}
 
-<h3 class="mb-4">Salary Scheme Dashboard</h3>
+<div class="page-header">
+    <div>
+        <h1>Salary Scheme Dashboard</h1>
+        <p>Customer deposits, goods taken and balances.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'scheme_customer_list' %}" class="btn btn-secondary">Customers</a>
+        <a href="{% url 'register_scheme_customer' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Add customer</a>
+    </div>
+</div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-primary border-4">
-            <div class="card-body">
-                <h6>Scheme Customers</h6>
-                <h4>{{ total_customers }}</h4>
-            </div>
+<div class="row g-3">
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-people" aria-hidden="true"></i>Scheme customers</div>
+            <div class="stat-value">{{ total_customers }}</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-success border-4">
-            <div class="card-body">
-                <h6>Total Deposits</h6>
-                <h4>{{ total_deposits|floatformat:2|intcomma }}</h4>
-            </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-wallet2" aria-hidden="true"></i>Total deposits</div>
+            <div class="stat-value"><small>UGX</small>{{ total_deposits|floatformat:0|intcomma }}</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-warning border-4">
-            <div class="card-body">
-                <h6>Goods Picked</h6>
-                <h4>{{ goods_value|floatformat:2|intcomma }}</h4>
-            </div>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-bag-check" aria-hidden="true"></i>Goods picked</div>
+            <div class="stat-value"><small>UGX</small>{{ goods_value|floatformat:0|intcomma }}</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-danger border-4">
-            <div class="card-body">
-                <h6>Scheme Balance</h6>
-                <h4>{{ scheme_balance|floatformat:2|intcomma }}</h4>
+    <div class="col-6 col-xl-3">
+        <div class="stat">
+            <div class="stat-label"><i class="bi bi-piggy-bank" aria-hidden="true"></i>Scheme balance</div>
+            <div class="stat-value"><small>UGX</small>{{ scheme_balance|floatformat:0|intcomma }}</div>
+            <div class="stat-meta">
+                {% if scheme_balance < 0 %}<span class="status status-bad">Over-drawn</span>
+                {% else %}<span class="status status-good">In credit</span>{% endif %}
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">Scheme Financial Summary</div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <span>Total Deposits</span>
-                        <strong>{{ total_deposits|floatformat:2|intcomma }}</strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" style="width: 100%"></div>
-                    </div>
-                </div>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="bar-row d-flex justify-content-between mb-2">
+            <span class="fw-semibold">Deposits used</span>
+            <span class="text-muted">
+                <strong class="text-body">{{ deposits_used|floatformat:0 }}%</strong>
+                · UGX {{ goods_value|floatformat:0|intcomma }} of {{ total_deposits|floatformat:0|intcomma }} taken as goods
+            </span>
+        </div>
+        <div class="bar {% if deposits_used > 100 %}bar-low{% endif %}" role="progressbar"
+             aria-valuenow="{{ deposits_used|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100" aria-label="Deposits used">
+            <span style="width: {{ deposits_used_bar|floatformat:0 }}%"></span>
+        </div>
+    </div>
+</div>
 
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <span>Goods Picked</span>
-                        <strong>{{ goods_value|floatformat:2|intcomma }}</strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-warning" style="width: 75%"></div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <span>Current Balance</span>
-                        <strong>{{ scheme_balance|floatformat:2|intcomma }}</strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-primary" style="width: 60%"></div>
-                    </div>
-                </div>
+<div class="row g-3 mt-2">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header panel-header">
+                Recent payments
+                <a href="{% url 'scheme_report' %}">Scheme report</a>
+            </div>
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in recent_payments %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'customer_scheme_detail' payment.customer.id %}" class="text-body text-decoration-none fw-semibold">{{ payment.customer.full_name }}</a>
+                                <div class="small text-muted">{{ payment.payment_date|date:"j M Y" }}</div>
+                            </td>
+                            <td class="text-end fw-semibold">{{ payment.amount_paid|floatformat:0|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="empty-state">No payments recorded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">Scheme Status</div>
-            <div class="card-body">
-                <p>Total scheme customers: <strong>{{ total_customers }}</strong></p>
-                <p>Total deposits received: <strong>{{ total_deposits|floatformat:2|intcomma }}</strong></p>
-                <p>Total goods picked: <strong>{{ goods_value|floatformat:2|intcomma }}</strong></p>
-                <p>Current scheme balance: <strong>{{ scheme_balance|floatformat:2|intcomma }}</strong></p>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Recent goods pickups</div>
+            <div class="card-body p-0 panel-body-flush table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th class="text-end">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pickup in recent_pickups %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'customer_scheme_detail' pickup.customer.id %}" class="text-body text-decoration-none fw-semibold">{{ pickup.customer.full_name }}</a>
+                                <div class="small text-muted">{{ pickup.pickup_date|date:"j M Y" }}</div>
+                            </td>
+                            <td>{{ pickup.product.product_name }}</td>
+                            <td class="text-end fw-semibold">{{ pickup.quantity_taken|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="empty-state">No goods picked up yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
